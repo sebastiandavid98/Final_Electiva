@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.cache import cache
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 
 from .decorators import requerir_permiso
@@ -23,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 def _redirect_por_rol(user):
     if user.rol == Usuario.ESTUDIANTE:
-        return redirect('/reservas/lista-laboratorios/')
+        return redirect('reservas:lista_laboratorios')
     if user.rol == Usuario.DOCENTE:
-        return redirect('/reservas/mis-reservas/')
+        return redirect('reservas:mis_reservas')
     if user.rol == Usuario.ADMINISTRATIVO:
-        return redirect('/dashboard/admin/')
+        return redirect('reservas:todas')
     return redirect(settings.LOGIN_REDIRECT_URL)
 
 
@@ -83,7 +84,11 @@ def login_view(request):
             )
 
             next_url = request.GET.get('next')
-            if next_url:
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
                 return redirect(next_url)
             return _redirect_por_rol(user)
 

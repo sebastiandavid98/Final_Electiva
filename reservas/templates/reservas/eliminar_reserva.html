@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar reserva{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h1 class="h4 mb-0">Eliminar reserva</h1>
+            </div>
+            <div class="card-body">
+                <p>Confirma la eliminacion de la reserva de <strong>{{ object.laboratorio }}</strong> para el {{ object.fecha }}.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'reservas:mis_reservas' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

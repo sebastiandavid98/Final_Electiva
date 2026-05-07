@@ -11,6 +11,7 @@ Generado por 'django-admin startproject' usando Django 5.2.14.
 from pathlib import Path
 
 import environ
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,10 @@ SECRET_KEY = env('SECRET_KEY')
 # Avoid collisions with system-level DEBUG values such as "release".
 DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', '.universidad.edu']
+ALLOWED_HOSTS = env.list(
+    'ALLOWED_HOSTS',
+    default=['localhost', '127.0.0.1', 'testserver', '.universidad.edu'],
+)
 
 
 # Application definition
@@ -45,8 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
     'axes',
     'accounts',
+    'reservas',
 ]
 
 AUTH_USER_MODEL = 'accounts.Usuario'
@@ -85,12 +91,19 @@ WSGI_APPLICATION = 'SistemaGestionReservasLaboratorios.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Supports both SQLite (default) and PostgreSQL via DATABASE_URL
+
+DATABASE_URL = env(
+    'DATABASE_URL',
+    default='sqlite:///db.sqlite3'
+)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
@@ -128,7 +141,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -148,6 +162,8 @@ SECURE_SSL_REDIRECT = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 0.5
@@ -161,6 +177,16 @@ AUTHENTICATION_BACKENDS = [
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:perfil'

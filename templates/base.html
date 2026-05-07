@@ -18,6 +18,11 @@
             {% if user.is_authenticated %}
                 <div class="navbar-nav ms-auto align-items-lg-center">
                     <span class="nav-link">Hola, {{ user.username }} ({{ user.get_rol_display }})</span>
+                    <a class="nav-link" href="{% url 'reservas:mis_reservas' %}">Mis reservas</a>
+                    <a class="nav-link" href="{% url 'reservas:crear_reserva' %}">Reservar</a>
+                    {% if perms.accounts.puede_aprobar_reservas %}
+                        <a class="nav-link" href="{% url 'reservas:todas' %}">Aprobaciones</a>
+                    {% endif %}
                     <a class="nav-link" href="{% url 'accounts:perfil' %}">Perfil</a>
                     {% if perms.accounts.puede_gestionar_usuarios %}
                         <a class="nav-link" href="{% url 'accounts:lista_usuarios' %}">Usuarios</a>

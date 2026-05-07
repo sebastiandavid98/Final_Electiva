@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Laboratorios{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Laboratorios</h1>
+    <a class="btn btn-primary" href="{% url 'reservas:crear_reserva' %}">Reservar laboratorio</a>
+</div>
+
+<div class="row g-3">
+    {% for laboratorio in laboratorios %}
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6 mb-0">{{ laboratorio }}</h2>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">Aun no hay laboratorios registrados. Crea la primera reserva para registrarlo.</div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
