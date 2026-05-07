@@ -6,8 +6,10 @@ Este módulo define los modelos principales del sistema de gestión de reservas,
 incluyendo la entidad Reserva que representa las solicitudes de uso de laboratorios.
 """
 
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Reserva(models.Model):
@@ -36,7 +38,7 @@ class Reserva(models.Model):
     ]
 
     usuario = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         help_text="Usuario que realiza la reserva"
     )
@@ -74,6 +76,31 @@ class Reserva(models.Model):
         ordering = ['-fecha_creacion']
         verbose_name = "Reserva"
         verbose_name_plural = "Reservas"
+
+    def clean(self):
+        if self.fecha and self.fecha < timezone.localdate():
+            raise ValidationError('No se pueden crear reservas en fechas pasadas.')
+
+        if self.hora_inicio and self.hora_fin and self.hora_fin <= self.hora_inicio:
+            raise ValidationError('La hora final debe ser mayor que la hora inicial.')
+
+        if self.laboratorio and self.fecha and self.hora_inicio and self.hora_fin:
+            conflictos = Reserva.objects.filter(
+                laboratorio__iexact=self.laboratorio,
+                fecha=self.fecha,
+                hora_inicio__lt=self.hora_fin,
+                hora_fin__gt=self.hora_inicio,
+            ).exclude(pk=self.pk)
+            if conflictos.exists():
+                raise ValidationError('Ya existe una reserva para ese laboratorio en ese horario.')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    @property
+    def puede_modificarse(self):
+        return self.estado == 'pendiente'
 
     def __str__(self):
         """

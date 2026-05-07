@@ -26,7 +26,7 @@ class AccountsFlowTests(TestCase):
         casos = [
             (self.estudiante.username, '/reservas/lista-laboratorios/'),
             (self.docente.username, '/reservas/mis-reservas/'),
-            (self.admin.username, '/dashboard/admin/'),
+            (self.admin.username, '/reservas/todas/'),
         ]
 
         for username, esperado in casos:

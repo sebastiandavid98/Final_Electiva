@@ -1,0 +1,49 @@
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Laboratorio</th>
+                <th>Fecha</th>
+                <th>Horario</th>
+                <th>Usuario</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+                <tr>
+                    <td>{{ reserva.laboratorio }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>{{ reserva.hora_inicio }} - {{ reserva.hora_fin }}</td>
+                    <td>{{ reserva.usuario.username }}</td>
+                    <td>
+                        <span class="badge {% if reserva.estado == 'aprobada' %}text-bg-success{% elif reserva.estado == 'rechazada' %}text-bg-danger{% else %}text-bg-warning{% endif %}">
+                            {{ reserva.get_estado_display }}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        {% if reserva.puede_modificarse %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'reservas:editar_reserva' reserva.pk %}">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" href="{% url 'reservas:eliminar_reserva' reserva.pk %}">Eliminar</a>
+                        {% endif %}
+                        {% if perms.accounts.puede_aprobar_reservas and reserva.estado == 'pendiente' %}
+                            <form class="d-inline" method="post" action="{% url 'reservas:aprobar' reserva.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-success" type="submit">Aprobar</button>
+                            </form>
+                            <form class="d-inline" method="post" action="{% url 'reservas:rechazar' reserva.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Rechazar</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td class="text-center text-muted py-4" colspan="6">No hay reservas registradas.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

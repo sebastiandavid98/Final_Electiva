@@ -1,4 +1,6 @@
 .venv/
+.tmp/
+staticfiles/
 .env
 __pycache__/
 *.py[cod]
