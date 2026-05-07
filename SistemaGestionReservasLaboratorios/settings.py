@@ -9,9 +9,9 @@ Generado por 'django-admin startproject' usando Django 5.2.14.
 """
 
 from pathlib import Path
-
 import environ
 import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -169,6 +169,9 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 0.5
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_RESET_ON_SUCCESS = True
+AXES_ENABLED = False
+
+ACCOUNT_LOCKOUT_ENABLED = not DEBUG
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',

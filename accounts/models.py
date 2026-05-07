@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -58,13 +59,15 @@ class Usuario(AbstractUser):
         return f'{self.username} - {self.get_rol_display()}'
 
     def esta_bloqueado(self):
+        if not getattr(settings, 'ACCOUNT_LOCKOUT_ENABLED', True):
+            return False
         return bool(
             self.bloqueado_hasta and self.bloqueado_hasta > timezone.now()
         )
 
     def registrar_intento_fallido(self):
         self.intentos_fallidos += 1
-        if self.intentos_fallidos >= 5:
+        if getattr(settings, 'ACCOUNT_LOCKOUT_ENABLED', True) and self.intentos_fallidos >= 5:
             self.bloqueado_hasta = timezone.now() + timezone.timedelta(
                 minutes=30
             )
