@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Todas las reservas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Todas las reservas</h1>
+    <div>
+        <a class="btn btn-outline-secondary" href="{% url 'reservas:exportar_csv' %}">Exportar CSV</a>
+        <a class="btn btn-outline-secondary" href="{% url 'reservas:exportar_pdf' %}">Exportar PDF</a>
+        <a class="btn btn-primary" href="{% url 'reservas:crear_reserva' %}">Nueva reserva</a>
+    </div>
+</div>
+
+<form class="row g-2 mb-3" method="get">
+    <div class="col-md-4">
+        <input class="form-control" type="search" name="laboratorio" value="{{ request.GET.laboratorio }}" placeholder="Buscar laboratorio">
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="aprobada" {% if request.GET.estado == 'aprobada' %}selected{% endif %}>Aprobada</option>
+            <option value="rechazada" {% if request.GET.estado == 'rechazada' %}selected{% endif %}>Rechazada</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-primary w-100" type="submit">Filtrar</button>
+    </div>
+</form>
+
+{% include 'reservas/_tabla_reservas.html' %}
+{% endblock %}

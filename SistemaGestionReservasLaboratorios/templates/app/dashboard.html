@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">Dashboard de Reservas</h1>
+
+        <!-- Sección de métricas -->
+        <div class="dashboard-metrics">
+            <div class="metric-card">
+                <h3>Total de Reservas</h3>
+                <p class="metric-number">{{ reservas.count }}</p>
+            </div>
+            <div class="metric-card">
+                <h3>Laboratorios Disponibles</h3>
+                <p class="metric-number">{{ reservas_por_laboratorio|length }}</p>
+            </div>
+            <div class="metric-card">
+                <h3>Reservas Pendientes</h3>
+                <p class="metric-number">{{ reservas.filter(estado='Pendiente').count }}</p>
+            </div>
+            <div class="metric-card">
+                <h3>Conflictos de Horario</h3>
+                <p class="metric-number">{{ conflictos|length }}</p>
+            </div>
+        </div>
+
+        <!-- Sección de reservas -->
+        <h2 class="table-title">Lista de Reservas</h2>
+        <table class="reservas-table">
+            <thead>
+                <tr>
+                    <th>Laboratorio</th>
+                    <th>Horario</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                    <th>Conflicto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.laboratorio.nombre }}</td>
+                        <td>{{ reserva.inicio }} - {{ reserva.fin }}</td>
+                        <td>{{ reserva.estado }}</td>
+                        <td>
+                            {% if reserva.estado == "Pendiente" %}
+                                <a href="{% url 'editar_reserva' reserva.id %}" class="btn btn-edit">Editar</a>
+                                <a href="{% url 'eliminar_reserva' reserva.id %}" class="btn btn-delete">Eliminar</a>
+                            {% endif %}
+                            {% if user.is_staff %}
+                                <a href="{% url 'cambiar_estado_reserva' reserva.id 'Aprobada' %}" class="btn btn-approve">Aprobar</a>
+                                <a href="{% url 'cambiar_estado_reserva' reserva.id 'Rechazada' %}" class="btn btn-reject">Rechazar</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if conflictos[reserva] %}
+                                <span class="conflict">Sí</span>
+                            {% else %}
+                                <span class="no-conflict">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
