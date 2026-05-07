@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesion{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 auth-card">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h4 mb-0">Iniciar Sesion</h1>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+                <hr>
+                <div class="text-center">
+                    <a href="{% url 'accounts:password_reset' %}">Olvidaste tu contrasena?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

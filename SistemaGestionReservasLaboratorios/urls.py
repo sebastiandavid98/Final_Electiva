@@ -11,16 +11,13 @@ Ejemplos:
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import include, path
 
 # Configuración de patrones URL principales del proyecto
 urlpatterns = [
-    # Panel de administración de Django
+    path('', lambda request: redirect('accounts:login'), name='home'),
     path('admin/', admin.site.urls),
-
-    # Aquí se pueden agregar más rutas principales según sea necesario
-    # Ejemplos:
-    # path('reservas/', include('reservas.urls')),
-    # path('api/', include('rest_framework.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
 

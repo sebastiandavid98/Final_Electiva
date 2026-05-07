@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4">{{ usuario.get_full_name|default:usuario.username }}</h1>
+                <p class="text-muted mb-2">{{ usuario.email|default:'Sin correo registrado' }}</p>
+                <span class="badge text-bg-primary">{{ usuario.get_rol_display }}</span>
+                <hr>
+                <p class="mb-1"><strong>Ultimo acceso:</strong></p>
+                <p class="text-muted mb-0">{{ usuario.fecha_ultimo_acceso|default:'Sin registro' }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Datos de contacto</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a href="{% url 'accounts:cambiar_contrasena' %}" class="btn btn-outline-secondary">Cambiar contrasena</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
